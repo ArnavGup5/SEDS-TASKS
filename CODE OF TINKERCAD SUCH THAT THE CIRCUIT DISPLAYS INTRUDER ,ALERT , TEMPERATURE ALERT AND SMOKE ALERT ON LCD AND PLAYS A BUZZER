@@ -1,0 +1,68 @@
+#include <LiquidCrystal.h> //NEEDED TO USE LCD
+int V_GasSens = 0;
+int V_TempSens =0;
+int pirValue =0;
+const int gas_sens = A0;
+const int temp_sens = A5;
+const int motion_sens = A4;
+const int redLedPin = 9;
+const int yellowLedPin = 3;
+const int buzzerPin = 2;
+const int blueledpin = 10;
+const int rs = 13, en = 12, d4 = 7, d5 = 6, d6 = 5, d7 = 4;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+void setup() { //MENTIONING THE INPUT AND OUTPUT DEVICES
+  pinMode(gas_sens, INPUT);
+  pinMode(temp_sens, INPUT);
+  pinMode(motion_sens, INPUT);
+  pinMode(redLedPin, OUTPUT);
+  pinMode(yellowLedPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(blueledpin, OUTPUT);
+  lcd.begin(16, 2);
+}
+
+void loop()
+{
+  //Smoke Alarm
+  V_GasSens = analogRead(gas_sens);
+  if (V_GasSens >=60){ 
+    tone(buzzerPin, 400, 400); //400 IS FREQUENCY THEN DURATION
+    digitalWrite(9, HIGH); //TURNING RED LED ON
+    lcd.setCursor(0,0);
+    lcd.print("SMOKE ALERT");
+    delay(500); //500 REFERS TO 0.5 SECONDS
+  }
+  else
+     {
+    digitalWrite(9, LOW); //TURNING RED LEF OFF
+    noTone(buzzerPin);
+}
+  //Temp Alarm
+  V_TempSens = -40+0.488155*(analogRead(temp_sens)-20); //CONVERTING THE VALUE TO VOLTAGE THEN CELCIUS
+   if (V_TempSens >=70) {
+    tone(buzzerPin, 400, 400);
+    lcd.setCursor(0,0);
+    lcd.print("HIGH TEMP ALERT");
+    digitalWrite(3,HIGH);
+    delay(500); }
+   else
+     {
+    digitalWrite(3, LOW);
+    noTone(buzzerPin);
+}
+  //INTRUDER ALERT
+   pirValue = digitalRead(motion_sens);
+   if (pirValue == HIGH) {
+     digitalWrite(10, HIGH); 
+     tone(buzzerPin, 400, 400);
+     lcd.setCursor(0,0);
+     lcd.print("INTRUDER ALERT"); 
+     delay(500);}
+   else {
+     digitalWrite(10, LOW);
+     noTone(buzzerPin);
+   }
+lcd.clear(); //DELETING THE PREVIOUS MESSAGES
+} 
